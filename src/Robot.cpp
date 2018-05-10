@@ -14,7 +14,7 @@ Robot::Robot()
 
     double tab[3] = {0,0,0};
 
-    loc().set(tab);
+    getLoc().set(tab);
 
     angle = 0;
     velocity = INIT_VELOCITY;
@@ -92,6 +92,91 @@ Robot::Robot()
     sha.clear();
 }
 
+Robot::Robot(const Wektor3D & l)
+{
+    ShapeVertices sha;
+    Wektor3D tmploc;
+
+    double tab[3] = {0,0,0};
+
+    getLoc() = l;
+
+    angle = 0;
+    velocity = INIT_VELOCITY;
+    rotVelocity = INIT_ROTATION_VELOCITY;
+
+    tmploc.set(tab);
+
+    tmploc[0] = -10;
+    tmploc[1] = 10;
+    tmploc[2] = 50;
+    make_tire(sha, 20, PI, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = 10;
+    make_tire(sha, 20, 0, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = -30;
+    tmploc[1] = 0;
+    tmploc[2] = 50;
+    make_box(sha, 20, 20, 80, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = 10;
+    make_box(sha, 20, 20, 80, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = -30;
+    tmploc[2] = 130;
+    make_box(sha, 60, 30, 150, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = -50;
+    tmploc[2] = 180;
+    make_box(sha, 20, 20, 70, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[2] -= 20;
+    make_box(sha, 20, 80, 20, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = 30;
+    make_box(sha, 20, 80, 20, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[2] += 20;
+    make_box(sha, 20, 20, 70, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = -20;
+    tmploc[2] = 280;
+    make_box(sha, 40, 25, 50, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = 30;
+    tmploc[1] = 10;
+    tmploc[2] = 51;
+    make_tire(sha, 50, 0, tmploc);
+    _addShape(sha);
+    sha.clear();
+
+    tmploc[0] = -30;
+    make_tire(sha, 50, PI, tmploc);
+    _addShape(sha);
+    sha.clear();
+}
+
 void Robot::move(const double distance)
 {
     double tab[3] = {distance * sin(angle), distance * cos(angle),0};
@@ -100,12 +185,12 @@ void Robot::move(const double distance)
 
     translation.set(tab);
 
-    loc() += translation;
+    getLoc() += translation;
 }
 
 void Robot::move(const Wektor3D translation)
 {
-    loc() += translation;
+    getLoc() += translation;
 }
 
 void Robot::rotate(double angle)

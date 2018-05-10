@@ -33,6 +33,15 @@ class SWektor {
    */
   SWektor();
   SWektor(const SWektor & w) ;
+  SWektor(double x, double y, double z)
+  {
+      tab[0] = x;
+      tab[1] = y;
+      tab[2] = z;
+
+      liczba_Wektorow++;
+  }
+
   ~SWektor() {liczba_Wektorow--;}
 
   const SWektor <Typ, Wymiar> operator + (const SWektor <Typ, Wymiar> & V) const;

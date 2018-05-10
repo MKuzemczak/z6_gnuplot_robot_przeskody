@@ -49,7 +49,7 @@ public:
      * \brief Getter zbioru kształtów, w tym wypadku wierzchołków łamanej.
      * \return Wektor zawierający kształt, który zawiera łamaną.
      */
-    Vertices<ShapeVertices> ver() { return _ver(); }
+    Vertices<ShapeVertices> ver() { return get_ver(); }
 
     /*!
      * \brief Czyści łamaną.

@@ -16,11 +16,11 @@ void Path::addVertix(const Wektor3D & v)
 
 void Path::setLast(const Wektor3D & v)
 {
-    _ver()[_ver().size() - 1][_ver()[_ver().size() - 1].size() - 1][_ver()[_ver().size() - 1]\
-            [_ver()[_ver().size() - 1].size() - 1].size() - 1] = v;
+    get_ver()[get_ver().size() - 1][get_ver()[get_ver().size() - 1].size() - 1][get_ver()[get_ver().size() - 1]\
+            [get_ver()[get_ver().size() - 1].size() - 1].size() - 1] = v;
 }
 
 void Path::clear()
 {
-    _ver().clear();
+    get_ver().clear();
 }

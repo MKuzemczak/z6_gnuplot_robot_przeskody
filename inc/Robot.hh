@@ -48,6 +48,8 @@ public:
      */
     Robot();
 
+    Robot(const Wektor3D & l);
+
     /*!
      * \brief Przesuwa robota zadany dystans.
      *
@@ -88,7 +90,7 @@ public:
      * \param height - wysokość, wymiar Z.
      * \param loc - wektor położenia kształtu względem układu lokalnego robota.
      */
-    void make_box(ShapeVertices & sha, int width, int depth, int height, Wektor3D loc);
+    void make_box(ShapeVertices & sha, int width, int depth, int height, Wektor3D getLoc);
 
     /*!
      * \brief Metoda tworzy koło pojazdu.
@@ -100,32 +102,52 @@ public:
      * \param facingAngle - kąt obrotu osi koła wokół osi Z
      * \param loc - wektor położenia kształtu względem ukłądu lokalnego robota.
      */
-    void make_tire(ShapeVertices & sha, double radius, double facingAngle, const Wektor3D & loc);
+    void make_tire(ShapeVertices & sha, double radius, double facingAngle, const Wektor3D & getLoc);
 
     /*!
      * \brief Getter zbioru wierzchołków.
      * \return Wektor kształtów dziedziczony po klasie ObiektGraficzny w postaci modyfikowalnej.
      */
-    Vertices<ShapeVertices> & ver() { return _ver(); }
+    Vertices<ShapeVertices> & ver() { return get_ver(); }
 
 
     /*!
      * \brief Getter kąta obrotu od zera.
      * \return Kąt obrotu w radianach.
      */
-    double & ang() {return angle;}
+    double & getAng () {return angle;}
+
+    /*!
+     * \brief Getter kąta obrotu od zera.
+     * \return Kąt obrotu w radianach.
+     */
+    const double & getAng () const {return angle;}
 
     /*!
      * \brief Getter prędkosci przesunięcia.
      * \return Wartość prędkości w jednostkach na sekundę.
      */
-    double & vel() {return velocity;}
+    double & getVel() {return velocity;}
+
+    /*!
+     * \brief Getter prędkosci przesunięcia.
+     * \return Wartość prędkości w jednostkach na sekundę.
+     */
+    const double & getVel() const {return velocity;}
+
 
     /*!
      * \brief Getter prędkości obrotu.
      * \return Wartość prędkości w radianach na sekundę.
      */
-    double & rotVel() {return rotVelocity;}
+    double & getRotVel() {return rotVelocity;}
+
+    /*!
+     * \brief Getter prędkości obrotu.
+     * \return Wartość prędkości w radianach na sekundę.
+     */
+    const double & getRotVel() const {return rotVelocity;}
+
 
 };
 

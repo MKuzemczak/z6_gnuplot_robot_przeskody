@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <list>
 #include <QThread>
 #include <QDebug>
 
@@ -23,6 +24,22 @@
 #define INIT_ZMIN 0
 #define INIT_ZMAX 350
 
+template<typename T>
+class lista : public std::list<T>
+{
+public:
+    Robot & operator [] (const int index)
+    {
+        int i = 0;
+        for(Robot & r : (*this))
+        {
+            if(i == index)
+                return r;
+            i++;
+        }
+    }
+};
+
 /*!
  * \brief Klasa sceny. Modeluje pojęcie sceny jako obiektu zawierającego obiekty
  * do wyrysowania i łącze do gnuplota.
@@ -36,6 +53,10 @@ class Scene : public QThread{
 
     Robot robot;
     Path path;
+
+
+    lista<Robot> robots;
+    int activeRobot;
 
     /*!
      * \brief Kierunek przemieszczenia
@@ -89,6 +110,13 @@ public:
      */
     void run();
 
+    void addRobot();
+
+    void activateRobot(int i);
+
+    int getActiveRobotIndex() {return activeRobot;}
+    const Robot & getActiveRobot() {return robots[activeRobot];}
+
     /*!
      * \brief Animowane przemieszczenie robota o dystans.
      *
@@ -137,11 +165,24 @@ public:
      */
     void setRobotVelocity(double v);
 
+
+    /*!
+     * \brief Getter prędkości - atrybutu klasy Robot
+     */
+    double getRobotVelocity() { return robots[activeRobot].getVel();}
+
+
     /*!
      * \brief Setter prędkości obrotu - atrybutu klasy Robot
      * \param v - prędkość kątowa do ustawienia w rad/s
      */
     void setRobotRotVelocity(double v);
+
+
+    /*!
+     * \brief Getter prędkości obrotu - atrybutu klasy Robot
+     */
+    double getRobotRotVelocity() { return robots[activeRobot].getRotVel();}
 
     /*!
      * \brief Setter kierunku przesuwania - atrybutu klasy Robot
@@ -207,6 +248,11 @@ public:
     void toggleDrawPath();
 
 
+    /*!
+     * \brief Getter ilości robotów na scenie.
+     * \return Ilość robotów.
+     */
+    int getRobotAmount() {return robots.size();}
 
     /*!
    * \brief Metoda zapisuje do pliku współrzędne wierzchołków

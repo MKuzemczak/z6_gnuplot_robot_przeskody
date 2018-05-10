@@ -8,12 +8,14 @@
 using namespace  std;
 
 
+
 Okno::Okno(QWidget *parent) : QWidget(parent)
 {
+
     setFocusPolicy(Qt::ClickFocus);
 
     // ustawienie wielkosci okna
-    setFixedSize(400, 500);
+    setFixedSize(400, 550);
 
     validator = new QIntValidator(-100000, 100000, this);
 
@@ -101,6 +103,21 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
     setAxisVals = new QPushButton("Ustaw\nzakresy\nosi", this);
     setAxisVals->setGeometry(150, 400, 100, 50);
 
+    selectRobotLabel = new QLabel("Aktywny robot:", this);
+    selectRobotLabel->move(200, 525);
+
+    selectRobot = new QComboBox(this);
+    selectRobot->move(320, 520);
+
+    for(int i = 0; i < sc.getRobotAmount(); i++)
+        selectRobot->addItem(QString::number(i));
+
+    addRobot = new QPushButton("+", this);
+    addRobot->setGeometry(360, 520, selectRobot->height()-5, selectRobot->height()-5);
+
+    connect(selectRobot, SIGNAL(activated(int)), this, SLOT(setActiveRobot()));
+    connect(addRobot, SIGNAL(pressed()), this, SLOT(sendAddRobot()));
+
     connect(moveButton, SIGNAL(pressed()), this, SLOT(sendMoveRobot()));
     connect(rotateButton, SIGNAL(pressed()), this, SLOT(sendRotateRobot()));
     connect(setVelButton, SIGNAL(pressed()), this, SLOT(sendRobotVel()));
@@ -110,7 +127,6 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
 
     SWektorAmount = new QLabel("Ilosc obiektow SWektor: 0", this);
     SWektorAmount->setGeometry(180, SWektorAmount->y(), 400, SWektorAmount->height());
-
 
     emiter = new Emitter();
     connect(emiter, SIGNAL(loop()), this, SLOT(updateSWektorAmount()));
@@ -130,9 +146,8 @@ void Okno::keyPressEvent(QKeyEvent *e)
             sc.start();
         }
         e->accept();
-
-        emiter->start();
     }
+
     if(e->key() == Qt::Key_S && !(e->isAutoRepeat()))
     {
         sc.setMovementDirection(-1);
@@ -144,6 +159,7 @@ void Okno::keyPressEvent(QKeyEvent *e)
         }
         e->accept();
     }
+
     if(e->key() == Qt::Key_A && !(e->isAutoRepeat()))
     {
         sc.setRotationDirection(-1);
@@ -225,7 +241,6 @@ void Okno::sendRobotVel()
 }
 void Okno::sendRobotRotVel()
 {
-    qDebug() << "hehe\n";
     sc.setRobotRotVelocity(rotateVelocityVal->text().toDouble());
 }
 
@@ -254,4 +269,20 @@ void Okno::sendAxisVals()
 void Okno::updateSWektorAmount()
 {
     SWektorAmount->setText("Ilosc obiektow SWektor: " + QString::number(Wektor3D::liczba_Wektorow));
+}
+
+void Okno::setActiveRobot()
+{
+    sc.activateRobot(selectRobot->currentIndex());
+
+    moveVelocityVal->setText(QString::number(sc.getActiveRobot().getVel()));
+
+    rotateVelocityVal->setText(QString::number(sc.getActiveRobot().getRotVel()));
+}
+
+void Okno::sendAddRobot()
+{
+    sc.addRobot();
+
+    selectRobot->addItem(QString::number(selectRobot->count()));
 }

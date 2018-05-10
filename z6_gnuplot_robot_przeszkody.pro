@@ -20,7 +20,8 @@ HEADERS = \
    $$PWD/inc/Vertices.hh \
    $$PWD/inc/Wektor3D.hh \
    $$PWD/emitter.h \
-   $$PWD/okno.h
+   $$PWD/okno.h \
+    obstacle.h
 
 SOURCES = \
    $$PWD/src/lacze_do_gnuplota.cpp \
@@ -31,7 +32,8 @@ SOURCES = \
    $$PWD/src/Scene.cpp \
    $$PWD/src/Vertices.cpp \
    $$PWD/emitter.cpp \
-   $$PWD/okno.cpp
+   $$PWD/okno.cpp \
+    obstacle.cpp
 
 INCLUDEPATH = \
     $$PWD/. \

@@ -8,6 +8,8 @@
 #include <QCheckBox>
 #include <QLabel>
 #include <QValidator>
+#include <QComboBox>
+#include <list>
 
 
 #include "emitter.h"
@@ -41,14 +43,18 @@ private:
     QPushButton *setAxisVals;                               /** Przycisk ustawienia zakresów osi */
 
     QValidator *validator;                                  /** Obiekt przypisywany do pól tekstowych aby ograniczyc
-                                                              * tekst do nich wprowadzany do integeróœ */
+                                                              * tekst do nich wprowadzany do integerów */
+
+    QComboBox *selectRobot;                                 /** Lista rozwijana wyboru robota */
+
+    QLabel *selectRobotLabel;                               /** Etykieta listy rozwijanej wyboru robota */
+
+    QPushButton *addRobot;
 
     Emitter *emiter;                                        /** Emituje cykliczny sygnal w wątku */
     QLabel *SWektorAmount;                                  /** Wyswietla ilosc stworzonych obecnie obiektow SWektor */
 
     Scene sc;       /** Scena */
-
-
 
 protected:
     void keyPressEvent(QKeyEvent *e);
@@ -66,6 +72,8 @@ public slots:
     void sendCameraFollow();
     void sendAxisVals();
     void updateSWektorAmount();
+    void setActiveRobot();
+    void sendAddRobot();
 };
 
 #endif // OKNO_H

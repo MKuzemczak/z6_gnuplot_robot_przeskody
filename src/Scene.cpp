@@ -8,6 +8,8 @@
 
 using namespace std;
 
+
+
 Scene::Scene()
 {
     _moving = false;
@@ -16,9 +18,11 @@ Scene::Scene()
     _cameraFollow = false;
     _drawPath = true;
 
+    activeRobot = 0;
+
     movement_direction = 1;
     rotation_direction = 1;
-    fps = 60;
+    fps = 35;
 
     Lacze.DodajNazwePliku("dane.dat");
     Lacze.ZmienTrybRys(PzG::TR_3D);
@@ -30,16 +34,21 @@ Scene::Scene()
 
     Lacze.UstawRotacjeXZ(45, 0); // Tutaj ustawiany jest widok
 
+    robots.push_back(Robot());
+
+
+    robots.push_back(Robot(Wektor3D(200, 0, 0)));
+
     save();
 
     Lacze.Rysuj();
 
-    path.addVertix(robot.loc());
+    path.addVertix(robots[activeRobot].getLoc());
 }
 
 void Scene::run()
 {
-    _threadRunning = true;
+    /*_threadRunning = true;
 
     while(_moving || _rotating)
     {
@@ -58,11 +67,79 @@ void Scene::run()
 
         usleep(1000000/fps);
     }
+    */
+
+    _threadRunning = true;
+
+    while(_moving || _rotating)
+    {
+        if(_moving)
+        {
+            moveRobotInsta(movement_direction * robots[activeRobot].getVel() / fps);
+        }
+        if (_rotating)
+        {
+            rotateRobotInsta(rotation_direction * robots[activeRobot].getRotVel() / fps);
+        }
+
+        save();
+
+        Lacze.Rysuj();
+
+        usleep(1000000/fps);
+    }
+}
+
+void Scene::activateRobot(int i)
+{
+    activeRobot = i;
+
+    ShapeVertices sha;
+
+    LineVertices lin;
+
+    sha.push_back(lin);
+
+    path.addShape(sha);
+
+    if(_cameraFollow)
+    {
+        setCameraFollow(true);
+    }
+
+}
+
+void Scene::addRobot()
+{
+    Wektor3D l;
+
+    bool collides = false;
+
+    do
+    {
+
+        collides = false;
+
+        for(Robot & r : robots)
+        {
+            if(fabs(r.getLoc()[0] - l[0]) < 200)
+                collides = true;
+        }
+
+        if(collides)
+            l[0] += 200;
+    } while (collides);
+
+    robots.push_back(Robot(l));
+
+    save();
+
+    Lacze.Rysuj();
 }
 
 void Scene::moveRobot(double distance)
 {
-    Wektor3D translation;
+    /*Wektor3D translation;
 
     double t = distance/robot.vel();
     double interval = distance/(fps*t);
@@ -90,12 +167,42 @@ void Scene::moveRobot(double distance)
         Lacze.Rysuj();
 
         usleep(1000000/fps);
+    }*/
+
+    Wektor3D translation;
+
+    double t = distance/robots[activeRobot].getVel();
+    double interval = distance/(fps*t);
+    double tab[3] = {interval * sin(robots[activeRobot].getAng()), interval * cos(robots[activeRobot].getAng()),0};
+
+    if(_drawPath)
+        path.addVertix(robots[activeRobot].getLoc());
+
+    translation.set(tab);
+
+    for(double i = 0; i < distance; i+=interval)
+    {
+        robots[activeRobot].move(translation);
+
+        if(_drawPath)
+            path.setLast(robots[activeRobot].getLoc());
+
+        save();
+        if(_cameraFollow)
+        {
+            Lacze.UstawZakresX(Lacze.Xmin() + translation[0], Lacze.Xmax() + translation[0]);
+            Lacze.UstawZakresY(Lacze.Ymin() + translation[1], Lacze.Ymax() + translation[1]);
+        }
+
+        Lacze.Rysuj();
+
+        usleep(1000000/fps);
     }
 }
 
 void Scene::moveRobotInsta(double distance)
 {
-    Wektor3D translation;
+    /*Wektor3D translation;
 
     double tab[3] = {distance * sin(robot.ang()), distance * cos(robot.ang()),0};
 
@@ -112,13 +219,32 @@ void Scene::moveRobotInsta(double distance)
     {
         Lacze.UstawZakresX(Lacze.Xmin() + translation[0], Lacze.Xmax() + translation[0]);
         Lacze.UstawZakresY(Lacze.Ymin() + translation[1], Lacze.Ymax() + translation[1]);
+    }*/
+
+    Wektor3D translation;
+
+    double tab[3] = {distance * sin(robots[activeRobot].getAng()), distance * cos(robots[activeRobot].getAng()),0};
+
+    if(_drawPath)
+        path.addVertix(robots[activeRobot].getLoc());
+
+    translation.set(tab);
+    robots[activeRobot].move(translation);
+
+    if(_drawPath)
+        path.setLast(robots[activeRobot].getLoc());
+
+    if(_cameraFollow)
+    {
+        Lacze.UstawZakresX(Lacze.Xmin() + translation[0], Lacze.Xmax() + translation[0]);
+        Lacze.UstawZakresY(Lacze.Ymin() + translation[1], Lacze.Ymax() + translation[1]);
     }
 }
 
 
 void Scene::rotateRobot(double angle)
 {
-    int degRobotAngle;
+    /*int degRobotAngle;
     double t = fabs(angle)/robot.rotVel();
     double interval = angle/(fps*t);
 
@@ -136,13 +262,32 @@ void Scene::rotateRobot(double angle)
         Lacze.Rysuj();
 
         usleep(1000000/fps);
+    }*/
+
+    int degRobotAngle;
+    double t = fabs(angle)/robots[activeRobot].getRotVel();
+    double interval = angle/(fps*t);
+
+    for(double i = 0; i < fabs(angle); i+=fabs(interval))
+    {
+        robots[activeRobot].rotate(interval);
+        save();
+
+        if(_cameraFollow)
+        {
+            degRobotAngle = RADTODEG * robots[activeRobot].getAng();
+            Lacze.UstawRotacjeZ(360-degRobotAngle);
+        }
+
+        Lacze.Rysuj();
+
+        usleep(1000000/fps);
     }
-    
 }
 
 void Scene::rotateRobotInsta(double angle)
 {
-    int degRobotAngle;
+    /*int degRobotAngle;
 
     robot.rotate(angle);
 
@@ -155,17 +300,37 @@ void Scene::rotateRobotInsta(double angle)
     }
 
     if(_cameraFollow)
+        Lacze.UstawRotacjeZ(360-degRobotAngle);*/
+
+    int degRobotAngle;
+
+    robots[activeRobot].rotate(angle);
+
+    degRobotAngle = (int) (RADTODEG * robots[activeRobot].getAng()) % 360;
+
+    if(robots[activeRobot].getAng() < 0)
+    {
+        degRobotAngle = 360 + degRobotAngle;
+        robots[activeRobot].getAng() = DOUBLEPI + robots[activeRobot].getAng();
+    }
+
+    if(_cameraFollow)
         Lacze.UstawRotacjeZ(360-degRobotAngle);
+
 }
 
 
 void Scene::setRobotVelocity(double v)
 {
-    robot.vel() = v;
+    //robot.vel() = v;
+
+    robots[activeRobot].getVel() = v;
 }
 void Scene::setRobotRotVelocity(double v)
 {
-    robot.rotVel() = v;
+    //robot.rotVel() = v;
+
+    robots[activeRobot].getRotVel() = v;
 }
 
 void Scene::setCameraFollow(const bool s)
@@ -174,10 +339,10 @@ void Scene::setCameraFollow(const bool s)
     {
         _cameraFollow = true;
 
-        Lacze.UstawZakresX(robot.loc()[0]-(Lacze.Xmax() - Lacze.Xmin())/2, robot.loc()[0] + (Lacze.Xmax() - Lacze.Xmin())/2);
-        Lacze.UstawZakresY(robot.loc()[1]-(Lacze.Ymax() - Lacze.Ymin())/2, robot.loc()[1] + (Lacze.Ymax() - Lacze.Ymin())/2);
+        Lacze.UstawZakresX(robots[activeRobot].getLoc()[0]-(Lacze.Xmax() - Lacze.Xmin())/2, robots[activeRobot].getLoc()[0] + (Lacze.Xmax() - Lacze.Xmin())/2);
+        Lacze.UstawZakresY(robots[activeRobot].getLoc()[1]-(Lacze.Ymax() - Lacze.Ymin())/2, robots[activeRobot].getLoc()[1] + (Lacze.Ymax() - Lacze.Ymin())/2);
 
-        Lacze.UstawRotacjeZ(360 - (robot.ang() * RADTODEG));
+        Lacze.UstawRotacjeZ(360 - (robots[activeRobot].getAng() * RADTODEG));
 
         Lacze.Rysuj();
     }
@@ -262,12 +427,31 @@ void Scene::toggleDrawPath()
 
 bool Scene::save()  
 {
-    Vertices<ShapeVertices> drawing;
+    /*Vertices<ShapeVertices> drawing;
 
     drawing = robot.ver();
 
     drawing.rotateAroundZ(robot.ang());
     drawing.addVector(robot.loc());
+
+    for(ShapeVertices sha : path.ver())
+        drawing.push_back(sha);
+
+    return ZapiszDoPliku<ShapeVertices>("dane.dat", drawing);*/
+
+    Vertices<ShapeVertices> singleObject;
+    Vertices<ShapeVertices> drawing;
+
+    for(Robot & r : robots)
+    {
+        singleObject = r.ver();
+
+        singleObject.rotateAroundZ(r.getAng());
+        singleObject.addVector(r.getLoc());
+
+        for(ShapeVertices & s : singleObject)
+            drawing.push_back(s);
+    }
 
     for(ShapeVertices sha : path.ver())
         drawing.push_back(sha);
@@ -287,8 +471,8 @@ bool Scene::ZapiszDoPliku(const char* sNazwaPliku, Vertices<Typ> ver) const
      << std::endl;
     return false;
   }
-//  return ZapiszDoStrumienia<Typ>(StrmWy, ver);
 
   StrmWy << ver;
+
   return !StrmWy.fail();
 }

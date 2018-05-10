@@ -57,13 +57,13 @@ public:
      * \brief Getter wektora lokalizacji
      * \return Wektor lokalizacji obiektu w postaci modyfikowalnej
      */
-    Wektor3D & loc () { return _location; }
+    Wektor3D & getLoc () { return _location; }
 
     /*!
      * \brief Getter zbioru wierzchołków
      * \return Wektor elementów składowych obiektu w postaci modyfikowalnej.
      */
-    Vertices<ShapeVertices> & _ver() { return _vertices; }
+    Vertices<ShapeVertices> & get_ver() { return _vertices; }
 
     /*!
      * \brief Dodanie kształtu do zbioru wierzchołków.
