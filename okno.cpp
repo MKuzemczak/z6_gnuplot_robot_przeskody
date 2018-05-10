@@ -107,16 +107,20 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
     selectRobotLabel->move(200, 525);
 
     selectRobot = new QComboBox(this);
-    selectRobot->move(320, 520);
+    selectRobot->move(300, 520);
 
     for(int i = 0; i < sc.getRobotAmount(); i++)
         selectRobot->addItem(QString::number(i));
 
     addRobot = new QPushButton("+", this);
-    addRobot->setGeometry(360, 520, selectRobot->height()-5, selectRobot->height()-5);
+    addRobot->setGeometry(340, 520, selectRobot->height()-5, selectRobot->height()-5);
+
+    deleteActiveRobot = new QPushButton("-", this);
+    deleteActiveRobot->setGeometry(365, 520, selectRobot->height()-5, selectRobot->height()-5);
 
     connect(selectRobot, SIGNAL(activated(int)), this, SLOT(setActiveRobot()));
     connect(addRobot, SIGNAL(pressed()), this, SLOT(sendAddRobot()));
+    connect(deleteActiveRobot, SIGNAL(pressed()), this, SLOT(sendDeleteRobot()));
 
     connect(moveButton, SIGNAL(pressed()), this, SLOT(sendMoveRobot()));
     connect(rotateButton, SIGNAL(pressed()), this, SLOT(sendRotateRobot()));
@@ -275,9 +279,9 @@ void Okno::setActiveRobot()
 {
     sc.activateRobot(selectRobot->currentIndex());
 
-    moveVelocityVal->setText(QString::number(sc.getActiveRobot().getVel()));
+    moveVelocityVal->setText(QString::number(sc.getActiveRobot()->getVel()));
 
-    rotateVelocityVal->setText(QString::number(sc.getActiveRobot().getRotVel()));
+    rotateVelocityVal->setText(QString::number(sc.getActiveRobot()->getRotVel()));
 }
 
 void Okno::sendAddRobot()
@@ -285,4 +289,11 @@ void Okno::sendAddRobot()
     sc.addRobot();
 
     selectRobot->addItem(QString::number(selectRobot->count()));
+}
+
+void Okno::sendDeleteRobot()
+{
+    sc.deleteActiveRobot();
+
+    selectRobot->removeItem(selectRobot->currentIndex());
 }

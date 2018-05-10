@@ -23,6 +23,11 @@
  * Obrotu wokół osi Z od kąta zero.
  */
 class Robot : public ObiektGraficzny {
+
+    Vertices<ShapeVertices> vertices;
+
+    LineVertices collisionRectangle;
+
     /*!
      * \brief Kąt obrotu robota od kąta zero.
      */
@@ -49,6 +54,18 @@ public:
     Robot();
 
     Robot(const Wektor3D & l);
+
+    /*!
+     * \brief Dodaje kształt do lokalnego zbioru wierzchołków robota.
+     * \param sha - kształt do dodania.
+     */
+    void addShape(const ShapeVertices sha) { vertices.push_back(sha); }
+
+    /*!
+     * \brief Dodaje obrócone i przesunięte wierzchołki do globalnego
+     *          zbioru wierzchołków robota.
+     */
+    void goGlobal();
 
     /*!
      * \brief Przesuwa robota zadany dystans.

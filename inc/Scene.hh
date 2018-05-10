@@ -10,12 +10,15 @@
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <memory>
 #include <QThread>
 #include <QDebug>
+
 
 #include "lacze_do_gnuplota.hh"
 #include "Robot.hh"
 #include "Path.hh"
+#include "obstacle.h"
 
 #define INIT_XMIN -500
 #define INIT_XMAX 500
@@ -28,10 +31,10 @@ template<typename T>
 class lista : public std::list<T>
 {
 public:
-    Robot & operator [] (const int index)
+    T operator [] (const int index)
     {
         int i = 0;
-        for(Robot & r : (*this))
+        for(T r : (*this))
         {
             if(i == index)
                 return r;
@@ -55,7 +58,9 @@ class Scene : public QThread{
     Path path;
 
 
-    lista<Robot> robots;
+    lista<std::shared_ptr<Robot>> robots;
+    lista<std::shared_ptr<ObiektGraficzny>> objects;
+
     int activeRobot;
 
     /*!
@@ -111,11 +116,11 @@ public:
     void run();
 
     void addRobot();
-
+    void deleteActiveRobot();
     void activateRobot(int i);
 
     int getActiveRobotIndex() {return activeRobot;}
-    const Robot & getActiveRobot() {return robots[activeRobot];}
+    const std::shared_ptr<Robot> getActiveRobot() {return robots[activeRobot];}
 
     /*!
      * \brief Animowane przemieszczenie robota o dystans.
@@ -169,7 +174,7 @@ public:
     /*!
      * \brief Getter prędkości - atrybutu klasy Robot
      */
-    double getRobotVelocity() { return robots[activeRobot].getVel();}
+    double getRobotVelocity() { return robots[activeRobot]->getVel();}
 
 
     /*!
@@ -182,7 +187,7 @@ public:
     /*!
      * \brief Getter prędkości obrotu - atrybutu klasy Robot
      */
-    double getRobotRotVelocity() { return robots[activeRobot].getRotVel();}
+    double getRobotRotVelocity() { return robots[activeRobot]->getRotVel();}
 
     /*!
      * \brief Setter kierunku przesuwania - atrybutu klasy Robot

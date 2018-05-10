@@ -49,7 +49,9 @@ private:
 
     QLabel *selectRobotLabel;                               /** Etykieta listy rozwijanej wyboru robota */
 
-    QPushButton *addRobot;
+    QPushButton *addRobot;                                  /** Przycisk dodawania robota */
+    QPushButton *deleteActiveRobot;                        /** Przycisk usuwania robota */
+
 
     Emitter *emiter;                                        /** Emituje cykliczny sygnal w wątku */
     QLabel *SWektorAmount;                                  /** Wyswietla ilosc stworzonych obecnie obiektow SWektor */
@@ -74,6 +76,7 @@ public slots:
     void updateSWektorAmount();
     void setActiveRobot();
     void sendAddRobot();
+    void sendDeleteRobot();
 };
 
 #endif // OKNO_H

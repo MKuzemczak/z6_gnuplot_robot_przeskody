@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <unistd.h>
+#include <QDebug>
 
 #include "lacze_do_gnuplota.hh" //tymczasowo do poruszania
 #include "Robot.hh"
@@ -26,70 +27,93 @@ Robot::Robot()
     tmploc[1] = 10;
     tmploc[2] = 50;
     make_tire(sha, 20, PI, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 10;
     make_tire(sha, 20, 0, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -30;
     tmploc[1] = 0;
     tmploc[2] = 50;
     make_box(sha, 20, 20, 80, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 10;
     make_box(sha, 20, 20, 80, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -30;
     tmploc[2] = 130;
     make_box(sha, 60, 30, 150, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -50;
     tmploc[2] = 180;
     make_box(sha, 20, 20, 70, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[2] -= 20;
     make_box(sha, 20, 80, 20, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
     
     tmploc[0] = 30;
     make_box(sha, 20, 80, 20, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[2] += 20;
     make_box(sha, 20, 20, 70, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -20;
     tmploc[2] = 280;
     make_box(sha, 40, 25, 50, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 30;
     tmploc[1] = 10;
     tmploc[2] = 51;
     make_tire(sha, 50, 0, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -30;
     make_tire(sha, 50, PI, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
+
+
+    /////////////////////////////////////////////// making collision rectangle
+    LineVertices lin;
+
+    double tab1[6];
+
+    scanBounds(vertices, tab1);
+
+    lin.push_back(Wektor3D(tab1[0], tab1[1], tab1[2]));
+    lin.push_back(Wektor3D(tab1[3], tab1[1], tab1[2]));
+    lin.push_back(Wektor3D(tab1[0], tab1[4], tab1[2]));
+    lin.push_back(Wektor3D(tab1[3], tab1[4], tab1[2]));
+    lin.push_back(Wektor3D(tab1[0], tab1[1], tab1[5]));
+    lin.push_back(Wektor3D(tab1[3], tab1[1], tab1[5]));
+    lin.push_back(Wektor3D(tab1[0], tab1[4], tab1[5]));
+    lin.push_back(Wektor3D(tab1[3], tab1[4], tab1[5]));
+
+    collisionRectangle = lin;
+    ////////////////////////////////////////////////
+
+
+    goGlobal();
 }
 
 Robot::Robot(const Wektor3D & l)
@@ -111,70 +135,103 @@ Robot::Robot(const Wektor3D & l)
     tmploc[1] = 10;
     tmploc[2] = 50;
     make_tire(sha, 20, PI, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 10;
     make_tire(sha, 20, 0, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -30;
     tmploc[1] = 0;
     tmploc[2] = 50;
     make_box(sha, 20, 20, 80, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 10;
     make_box(sha, 20, 20, 80, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -30;
     tmploc[2] = 130;
     make_box(sha, 60, 30, 150, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -50;
     tmploc[2] = 180;
     make_box(sha, 20, 20, 70, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[2] -= 20;
     make_box(sha, 20, 80, 20, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 30;
     make_box(sha, 20, 80, 20, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[2] += 20;
     make_box(sha, 20, 20, 70, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -20;
     tmploc[2] = 280;
     make_box(sha, 40, 25, 50, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = 30;
     tmploc[1] = 10;
     tmploc[2] = 51;
     make_tire(sha, 50, 0, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
 
     tmploc[0] = -30;
     make_tire(sha, 50, PI, tmploc);
-    _addShape(sha);
+    addShape(sha);
     sha.clear();
+
+
+    /////////////////////////////////////////////// making collision rectangle
+    LineVertices lin;
+
+    double tab1[6];
+
+    scanBounds(vertices, tab1);
+
+    lin.push_back(Wektor3D(tab1[0], tab1[1], tab1[2]));
+    lin.push_back(Wektor3D(tab1[3], tab1[1], tab1[2]));
+    lin.push_back(Wektor3D(tab1[0], tab1[4], tab1[2]));
+    lin.push_back(Wektor3D(tab1[3], tab1[4], tab1[2]));
+    lin.push_back(Wektor3D(tab1[0], tab1[1], tab1[5]));
+    lin.push_back(Wektor3D(tab1[3], tab1[1], tab1[5]));
+    lin.push_back(Wektor3D(tab1[0], tab1[4], tab1[5]));
+    lin.push_back(Wektor3D(tab1[3], tab1[4], tab1[5]));
+
+    collisionRectangle = lin;
+    ////////////////////////////////////////////////
+
+    goGlobal();
+}
+
+void Robot::goGlobal()
+{
+    get_ver() = vertices;
+    get_ver().rotateAroundZ(angle);
+    get_ver().addVector(getLoc());
+
+    getColRect() = collisionRectangle;
+    getColRect().rotateAroundZ(angle);
+    getColRect().addVector(getLoc());
 }
 
 void Robot::move(const double distance)
@@ -186,11 +243,15 @@ void Robot::move(const double distance)
     translation.set(tab);
 
     getLoc() += translation;
+
+    goGlobal();
 }
 
 void Robot::move(const Wektor3D translation)
 {
     getLoc() += translation;
+
+    goGlobal();
 }
 
 void Robot::rotate(double angle)
@@ -202,7 +263,7 @@ void Robot::rotate(double angle)
     if(this->angle < 0)
         this->angle = DOUBLEPI + this->angle;
 
-    
+    goGlobal();
 }
 
 void Robot::make_box(ShapeVertices & sha, int width, int depth, int height, Wektor3D loc)

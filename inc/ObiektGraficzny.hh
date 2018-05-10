@@ -48,7 +48,7 @@ class ObiektGraficzny {
      */
     Vertices<ShapeVertices> _vertices;
 
-
+    LineVertices _collisionRectangle;
 
 public:
 
@@ -66,10 +66,18 @@ public:
     Vertices<ShapeVertices> & get_ver() { return _vertices; }
 
     /*!
+     * \brief Getter zbioru wierzchołków prostopadłościanu od kolizji.
+     * \return Wektor typu LineVertices wierchołków prostopadłościanu.
+     */
+    LineVertices & getColRect() { return _collisionRectangle; }
+
+    /*!
      * \brief Dodanie kształtu do zbioru wierzchołków.
      * \param sha - obiekt do dodania, zawierający krzywe łamane
      */
     void _addShape(const ShapeVertices sha) { _vertices.push_back(sha); }
+
+    void scanBounds(Vertices<ShapeVertices> obj, double *tab);
 
     /*!
      * \brief Dodanie wektora na koniec.
