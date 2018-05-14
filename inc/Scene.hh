@@ -19,13 +19,15 @@
 #include "Robot.hh"
 #include "Path.hh"
 #include "obstacle.h"
+#include "gjk_collision_detection.h"
+
 
 #define INIT_XMIN -500
 #define INIT_XMAX 500
 #define INIT_YMIN -500
 #define INIT_YMAX 500
 #define INIT_ZMIN 0
-#define INIT_ZMAX 350
+#define INIT_ZMAX 450
 
 template<typename T>
 class lista : public std::list<T>
@@ -98,6 +100,7 @@ class Scene : public QThread{
      */
     bool save() ;
 public:
+
     /*!
      * \brief Konstruktor
      *
@@ -122,6 +125,7 @@ public:
     int getActiveRobotIndex() {return activeRobot;}
     const std::shared_ptr<Robot> getActiveRobot() {return robots[activeRobot];}
 
+    bool activeRobotCollision();
     /*!
      * \brief Animowane przemieszczenie robota o dystans.
      *

@@ -21,7 +21,8 @@ HEADERS = \
    $$PWD/inc/Wektor3D.hh \
    $$PWD/emitter.h \
    $$PWD/okno.h \
-    obstacle.h
+    obstacle.h \
+    gjk_collision_detection.h
 
 SOURCES = \
    $$PWD/src/lacze_do_gnuplota.cpp \
@@ -33,7 +34,8 @@ SOURCES = \
    $$PWD/src/Vertices.cpp \
    $$PWD/emitter.cpp \
    $$PWD/okno.cpp \
-    obstacle.cpp
+    obstacle.cpp \
+    gjk_collision_detection.cpp
 
 INCLUDEPATH = \
     $$PWD/. \

@@ -16,6 +16,7 @@
 
 #include "Wektor3D.hh"
 #include "Vertices.hh"
+#include "gjk_collision_detection.h"
 
 
 

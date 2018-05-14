@@ -297,3 +297,5 @@ void Okno::sendDeleteRobot()
 
     selectRobot->removeItem(selectRobot->currentIndex());
 }
+
+

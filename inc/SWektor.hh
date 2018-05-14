@@ -17,6 +17,8 @@
 
 #include "rozmiar.h"
 
+//#define EPSILON 0.0000001
+
 /*!
  * \brief Klasa SWektor, wektor zawierający Wymiar elementów typu Typ
  */
@@ -56,7 +58,9 @@ class SWektor {
   const	SWektor <Typ, Wymiar> operator -= (const Typ l);
   const	SWektor <Typ, Wymiar> operator *= (const Typ l);
   const	SWektor <Typ, Wymiar> operator /= (const Typ l);
+  const bool operator == (const SWektor <Typ, Wymiar> & V);
 
+  const SWektor <Typ, Wymiar> cross (const SWektor <Typ, Wymiar> & V) const;
 
 	Typ & operator [] (const int index);
 	const Typ & operator [] (const int index) const;
@@ -119,12 +123,22 @@ SWektor<Typ, Wymiar>::SWektor(const SWektor & w)
 
 }
 
-
-/****************************************************************************
-* Przeciazenie operatora mnozenia dla dzialania liczba * SWektor
-*****************************************************************************/
 template <typename Typ, int Wymiar>
-const SWektor <Typ, Wymiar> operator * (const Typ l, const SWektor <Typ, Wymiar> & V);
+const SWektor <Typ, Wymiar> SWektor<Typ, Wymiar>::cross (const SWektor <Typ, Wymiar> & V) const
+{
+    SWektor<Typ, Wymiar> w;
+
+    if(Wymiar == 3)
+    {
+        SWektor<Typ, Wymiar> ret(tab[1] * V[2] - tab[2] * V[1],
+                                 (tab[2] * V[0] - tab[0] * V[2]),
+                                 tab[0] * V[1] - tab[1] * V[0]);
+
+        return ret;
+    }
+
+    return w;
+}
 
 /****************************************************************************
 *	Przeciazenie operatora dla wczytywania SWektora ze strumienia wejsciowego.
@@ -183,8 +197,31 @@ std::ostream& operator << (std::ostream &Strm, const SWektor <Typ, Wymiar> &Wek)
 	return Strm;
 }
 
+template <typename Typ, int Wymiar>
+QDebug & operator << (QDebug &Strm, const SWektor <Typ, Wymiar> &Wek)
+{
+    for (int i = 0; i < Wymiar - 1; i++)
+    {
+        Strm << Wek[i] << " ";
+    }
+
+    Strm << Wek[Wymiar - 1];
+
+    return Strm;
+}
 
 
+template <typename Typ, int Wymiar>
+const bool SWektor <Typ, Wymiar>::operator == (const SWektor <Typ, Wymiar> & V)
+{
+    for(int i = 0; i < Wymiar; i++)
+    {
+        if(fabs(tab[i] - V[i]) > EPSILON)
+            return false;
+    }
+
+    return true;
+}
 
 template <typename Typ, int Wymiar>
 const SWektor <Typ, Wymiar> SWektor <Typ, Wymiar>::operator + (const SWektor <Typ, Wymiar> & V) const

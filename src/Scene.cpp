@@ -40,7 +40,9 @@ Scene::Scene()
     for(std::shared_ptr<Robot> r : robots)
         objects.push_back(r);
 
-    objects.push_back(make_shared<Obstacle>(Obstacle(0, 300, 100, 100, 100, 5)));
+
+    objects.push_back(make_shared<Obstacle>(Obstacle(0, 300, 100, 100, 100, 4)));
+    objects.push_back(make_shared<Obstacle>(Obstacle(300, 300, 350, 100, 100, 10)));
 
     save();
 
@@ -79,10 +81,14 @@ void Scene::run()
         if(_moving)
         {
             moveRobotInsta(movement_direction * robots[activeRobot]->getVel() / fps);
+            if(activeRobotCollision())
+                moveRobotInsta(-movement_direction * robots[activeRobot]->getVel() / fps);
         }
         if (_rotating)
         {
             rotateRobotInsta(rotation_direction * robots[activeRobot]->getRotVel() / fps);
+            if(activeRobotCollision())
+                rotateRobotInsta(-rotation_direction * robots[activeRobot]->getRotVel() / fps);
         }
 
         save();
@@ -92,6 +98,7 @@ void Scene::run()
         usleep(1000000/fps);
     }
 }
+
 
 void Scene::activateRobot(int i)
 {
@@ -134,6 +141,7 @@ void Scene::addRobot()
     } while (collides);
 
     robots.push_back(std::make_shared<Robot>(Robot(l)));
+    objects.push_back(robots[robots.size() - 1]);
 
     save();
 
@@ -158,6 +166,18 @@ void Scene::deleteActiveRobot()
     save();
 
     Lacze.Rysuj();
+}
+
+bool Scene::activeRobotCollision()
+{
+    for(shared_ptr<ObiektGraficzny> o : objects)
+    {
+        if(o != robots[activeRobot])
+            if(gjk_collision(robots[activeRobot]->getColRect(), o->getColRect()))
+                return true;
+    }
+
+    return false;
 }
 
 void Scene::moveRobot(double distance)
@@ -472,13 +492,16 @@ bool Scene::save()
         for(ShapeVertices & s : singleObject)
             drawing.push_back(s);
 
-        ShapeVertices sha;
+        /*ShapeVertices sha;
         sha.push_back(r->getColRect());
-        drawing.push_back(sha);
+        drawing.push_back(sha);*/
     }
 
     for(ShapeVertices sha : path.ver())
         drawing.push_back(sha);
+
+    ShapeVertices sha;
+    LineVertices lin;
 
     return ZapiszDoPliku<ShapeVertices>("dane.dat", drawing);
 }
