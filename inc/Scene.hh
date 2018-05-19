@@ -35,13 +35,33 @@ class lista : public std::list<T>
 public:
     T operator [] (const int index)
     {
+        T ret;
         int i = 0;
         for(T r : (*this))
         {
             if(i == index)
-                return r;
+                ret = r;
             i++;
         }
+
+        return ret;
+    }
+
+    void erase(int index)
+    {
+        int i = 0;
+
+        for(auto it = std::list<T>::begin(); it != std::list<T>::end(); )
+        {
+            if (i++ == index)
+            {
+                it = std::list<T>::erase(it);
+                break;
+            }
+            else
+                ++it;
+        }
+
     }
 };
 
@@ -118,7 +138,7 @@ public:
      */
     void run();
 
-    void addRobot();
+    void addRobot(double height);
     void deleteActiveRobot();
     void activateRobot(int i);
 
@@ -126,6 +146,10 @@ public:
     const std::shared_ptr<Robot> getActiveRobot() {return robots[activeRobot];}
 
     bool activeRobotCollision();
+
+    void addObstacle(const double x, const double y, const double z,
+                     const double width, const double height,
+                     const int vertixAmt, const ObstacleType type);
     /*!
      * \brief Animowane przemieszczenie robota o dystans.
      *

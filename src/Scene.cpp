@@ -35,14 +35,15 @@ Scene::Scene()
     Lacze.UstawRotacjeXZ(45, 0); // Tutaj ustawiany jest widok
 
     robots.push_back(std::make_shared<Robot>(Robot()));
-    robots.push_back(std::make_shared<Robot>(Robot(Wektor3D(200, 0, 0))));
+    robots.push_back(std::make_shared<Robot>(Robot(Wektor3D(200, 0, 0), 150)));
 
     for(std::shared_ptr<Robot> r : robots)
         objects.push_back(r);
 
 
-    objects.push_back(make_shared<Obstacle>(Obstacle(0, 300, 100, 100, 100, 4)));
-    objects.push_back(make_shared<Obstacle>(Obstacle(300, 300, 350, 100, 100, 10)));
+    objects.push_back(make_shared<PenisObstacle>(PenisObstacle(0, 300, 50, 300, 0.7)));
+    objects.push_back(make_shared<PolygonObstacle>(PolygonObstacle(300, 300, 350, 100, 100, 10, 0)));
+    objects.push_back(make_shared<SquareObstacle>(SquareObstacle(-300,300, 350, 100, 100, 0)));
 
     save();
 
@@ -119,7 +120,7 @@ void Scene::activateRobot(int i)
 
 }
 
-void Scene::addRobot()
+void Scene::addRobot(double height)
 {
     Wektor3D l;
 
@@ -140,7 +141,7 @@ void Scene::addRobot()
             l[0] += 200;
     } while (collides);
 
-    robots.push_back(std::make_shared<Robot>(Robot(l)));
+    robots.push_back(std::make_shared<Robot>(Robot(l, height)));
     objects.push_back(robots[robots.size() - 1]);
 
     save();
@@ -150,22 +151,29 @@ void Scene::addRobot()
 
 void Scene::deleteActiveRobot()
 {
-    int i;
+    int j = 0;
 
-    for(auto it = robots.begin(); it != robots.end(); )
+    for(shared_ptr<ObiektGraficzny> o : objects)
     {
-        if (i++ == activeRobot)
-            it = robots.erase(it);
-        else
-            ++it;
+        if(o == robots[activeRobot])
+        {
+            objects.erase(j);
+            break;
+        }
+
+        j++;
     }
 
-    if(activeRobot == robots.size())
+    robots.erase(activeRobot);
+
+    if(activeRobot == (int)robots.size())
         activeRobot--;
 
     save();
 
     Lacze.Rysuj();
+
+    activateRobot(activeRobot);
 }
 
 bool Scene::activeRobotCollision()
@@ -173,11 +181,34 @@ bool Scene::activeRobotCollision()
     for(shared_ptr<ObiektGraficzny> o : objects)
     {
         if(o != robots[activeRobot])
-            if(gjk_collision(robots[activeRobot]->getColRect(), o->getColRect()))
+            if(robots[activeRobot]->collides(*o))
                 return true;
     }
 
     return false;
+}
+
+void Scene::addObstacle(const double x, const double y, const double z,
+                 const double width, const double height,
+                 const int vertixAmt, ObstacleType type)
+{
+
+    switch(type)
+    {
+    case POLYGON:
+        objects.push_back(make_shared<PolygonObstacle>(PolygonObstacle(x, y, z, width, height, vertixAmt, 0)));
+        break;
+    case SQUARE:
+        objects.push_back(make_shared<SquareObstacle>(SquareObstacle(x, y, z, width, height, 0)));
+        break;
+    case PENIS:
+        objects.push_back(make_shared<PenisObstacle>(PenisObstacle(x, y, z, height, 0)));
+        break;
+     }
+
+    save();
+
+    Lacze.Rysuj();
 }
 
 void Scene::moveRobot(double distance)
@@ -380,14 +411,54 @@ void Scene::setCameraFollow(const bool s)
 {
     if(s)
     {
+        double Xmin = Lacze.Xmin(), Xmax = Lacze.Xmax(), Ymin = Lacze.Ymin(), Ymax = Lacze.Ymax();
+        double rotZ = Lacze.RotacjaZ();
+
+        double newXmin = robots[activeRobot]->getLoc()[0] - (Lacze.Xmax() - Lacze.Xmin())/2,
+               newXmax = robots[activeRobot]->getLoc()[0] + (Lacze.Xmax() - Lacze.Xmin())/2,
+               newYmin = robots[activeRobot]->getLoc()[1] - (Lacze.Ymax() - Lacze.Ymin())/2,
+               newYmax = robots[activeRobot]->getLoc()[1] + (Lacze.Ymax() - Lacze.Ymin())/2;
+        double newRotZ = 360 - (robots[activeRobot]->getAng() * RADTODEG);
+
+        double diffXmin = (newXmin - Xmin)/fps,
+               diffXmax = (newXmax - Xmax)/fps,
+               diffYmin = (newYmin - Ymin)/fps,
+               diffYmax = (newYmax - Ymax)/fps;
+        double diffRotZ = (newRotZ - rotZ);
+
+
+        if(fabs(diffRotZ) > 180)
+        {
+            if(diffRotZ > 0)
+                diffRotZ = -(360 - diffRotZ);
+            else
+                diffRotZ = 360 + diffRotZ;
+        }
+
+
+        diffRotZ /= fps;
+
         _cameraFollow = true;
 
-        Lacze.UstawZakresX(robots[activeRobot]->getLoc()[0]-(Lacze.Xmax() - Lacze.Xmin())/2, robots[activeRobot]->getLoc()[0] + (Lacze.Xmax() - Lacze.Xmin())/2);
-        Lacze.UstawZakresY(robots[activeRobot]->getLoc()[1]-(Lacze.Ymax() - Lacze.Ymin())/2, robots[activeRobot]->getLoc()[1] + (Lacze.Ymax() - Lacze.Ymin())/2);
+        double rot;
 
-        Lacze.UstawRotacjeZ(360 - (robots[activeRobot]->getAng() * RADTODEG));
+        for(int i = 0; i < fps + 1; i++)
+        {
+            Lacze.UstawZakresX(Xmin + i * diffXmin, Xmax + i * diffXmax);
+            Lacze.UstawZakresY(Ymin + i * diffYmin, Ymax + i * diffYmax);
 
-        Lacze.Rysuj();
+            rot = rotZ + i * diffRotZ;
+
+            if(rot < 0)
+                rot = 360 + rot;
+
+            Lacze.UstawRotacjeZ(fmod(rot, 360));
+
+            Lacze.Rysuj();
+
+            usleep(1000000/(2*fps));
+        }
+
     }
     else
         _cameraFollow = false;
@@ -492,9 +563,7 @@ bool Scene::save()
         for(ShapeVertices & s : singleObject)
             drawing.push_back(s);
 
-        /*ShapeVertices sha;
-        sha.push_back(r->getColRect());
-        drawing.push_back(sha);*/
+        //drawing.push_back(r->getColRect());
     }
 
     for(ShapeVertices sha : path.ver())

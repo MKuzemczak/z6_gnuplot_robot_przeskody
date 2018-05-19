@@ -22,7 +22,8 @@ HEADERS = \
    $$PWD/emitter.h \
    $$PWD/okno.h \
     obstacle.h \
-    gjk_collision_detection.h
+    gjk_collision_detection.h \
+    create.h
 
 SOURCES = \
    $$PWD/src/lacze_do_gnuplota.cpp \
@@ -35,7 +36,8 @@ SOURCES = \
    $$PWD/emitter.cpp \
    $$PWD/okno.cpp \
     obstacle.cpp \
-    gjk_collision_detection.cpp
+    gjk_collision_detection.cpp \
+    create.cpp
 
 INCLUDEPATH = \
     $$PWD/. \

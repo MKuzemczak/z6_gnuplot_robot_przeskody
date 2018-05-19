@@ -22,16 +22,20 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
     // stworzenie przycisku przemieszczenia robota
     moveButton = new QPushButton("Idź", this);
     moveButton->setGeometry(50, 225, 100, 50);
+    moveButton->setFocusPolicy(Qt::NoFocus);
 
     // stworzenie przycisku obrotu robota
     rotateButton = new QPushButton("Obróć", this);
     rotateButton->setGeometry(250, 225, 100, 50);
+    rotateButton->setFocusPolicy(Qt::NoFocus);
 
     setVelButton = new QPushButton("Ustaw\nprędkość", this);
     setVelButton->setGeometry(50, 100, 100, 50);
+    setVelButton->setFocusPolicy(Qt::NoFocus);
 
     setRotVelButton = new QPushButton("Ustaw\nprędkość\nobrotu", this);
     setRotVelButton->setGeometry(250, 100, 100, 50);
+    setRotVelButton->setFocusPolicy(Qt::NoFocus);
 
 
     moveVal = new QLineEdit(this);
@@ -70,8 +74,11 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
 
     cameraFollow = new QCheckBox("Podążaj za robotem", this);
     cameraFollow->setGeometry(5, 5, cameraFollow->width() + 60, cameraFollow->height());
+    cameraFollow->setFocusPolicy(Qt::NoFocus);
+
     keepAxisValsRatio = new QCheckBox("Zachowaj proporcje", this);
     keepAxisValsRatio->move(125,460);
+    keepAxisValsRatio->setFocusPolicy(Qt::NoFocus);
 
     for(int i = 0; i < 6; i++)
     {
@@ -102,25 +109,39 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
 
     setAxisVals = new QPushButton("Ustaw\nzakresy\nosi", this);
     setAxisVals->setGeometry(150, 400, 100, 50);
+    setAxisVals->setFocusPolicy(Qt::NoFocus);
 
-    selectRobotLabel = new QLabel("Aktywny robot:", this);
-    selectRobotLabel->move(200, 525);
+
 
     selectRobot = new QComboBox(this);
-    selectRobot->move(300, 520);
+    selectRobot->setGeometry(230, 510, selectRobot->width(), selectRobot->height()-5);
+    selectRobot->setFocusPolicy(Qt::NoFocus);
+
+    selectRobotLabel = new QLabel("Aktywny robot:", this);
+    selectRobotLabel->move(selectRobot->x() - 110, selectRobot->y() + 3);
 
     for(int i = 0; i < sc.getRobotAmount(); i++)
         selectRobot->addItem(QString::number(i));
 
     addRobot = new QPushButton("+", this);
-    addRobot->setGeometry(340, 520, selectRobot->height()-5, selectRobot->height()-5);
+    addRobot->setGeometry(selectRobot->x() + selectRobot->width() + 5, selectRobot->y(),
+                          selectRobot->height(), selectRobot->height());
+    addRobot->setFocusPolicy(Qt::NoFocus);
 
     deleteActiveRobot = new QPushButton("-", this);
-    deleteActiveRobot->setGeometry(365, 520, selectRobot->height()-5, selectRobot->height()-5);
+    deleteActiveRobot->setGeometry(addRobot->x() + addRobot->width() + 5, addRobot->y(),
+                                   addRobot->width(), addRobot->height());
+    deleteActiveRobot->setFocusPolicy(Qt::NoFocus);
+
+    addObstacle = new QPushButton("Dodaj\nprzeszkodę", this);
+    addObstacle->move(5, height() - 50);
+    addObstacle->setFocusPolicy(Qt::NoFocus);
 
     connect(selectRobot, SIGNAL(activated(int)), this, SLOT(setActiveRobot()));
     connect(addRobot, SIGNAL(pressed()), this, SLOT(sendAddRobot()));
     connect(deleteActiveRobot, SIGNAL(pressed()), this, SLOT(sendDeleteRobot()));
+
+    connect(addObstacle, SIGNAL(pressed()), this, SLOT(sendAddObstacle()));
 
     connect(moveButton, SIGNAL(pressed()), this, SLOT(sendMoveRobot()));
     connect(rotateButton, SIGNAL(pressed()), this, SLOT(sendRotateRobot()));
@@ -135,6 +156,9 @@ Okno::Okno(QWidget *parent) : QWidget(parent)
     emiter = new Emitter();
     connect(emiter, SIGNAL(loop()), this, SLOT(updateSWektorAmount()));
     emiter->start();
+
+    createRobotDialog = new createRobot();
+    createObstacleDialog = new createObstacle();
 }
 
 
@@ -192,6 +216,8 @@ void Okno::keyPressEvent(QKeyEvent *e)
     {
         sc.toggleDrawPath();
     }
+    if(e->key() == Qt::Key_C)
+        createObstacleDialog->exec();
 }
 
 void Okno::keyReleaseEvent(QKeyEvent *e)
@@ -286,9 +312,16 @@ void Okno::setActiveRobot()
 
 void Okno::sendAddRobot()
 {
-    sc.addRobot();
+    QString n;
+    double h;
 
-    selectRobot->addItem(QString::number(selectRobot->count()));
+    if(createRobotDialog->execute(h, n))
+    {
+        sc.addRobot(h);
+        selectRobot->addItem(n);
+    }
+
+
 }
 
 void Okno::sendDeleteRobot()
@@ -299,3 +332,15 @@ void Okno::sendDeleteRobot()
 }
 
 
+void Okno::sendAddObstacle()
+{
+    double x, y, z,
+            width, height;
+    int vertixAmt;
+    ObstacleType type;
+
+    if(createObstacleDialog->execute(x, y, z, width, height, vertixAmt, type))
+    {
+        sc.addObstacle(x, y, z, width, height, vertixAmt, type);
+    }
+}

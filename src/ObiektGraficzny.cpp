@@ -13,18 +13,23 @@
 using namespace std;
 
 
-void ObiektGraficzny::scanBounds(Vertices<ShapeVertices> obj, double *tab)
+void ObiektGraficzny::scanBounds(Vertices<ShapeVertices> obj, ShapeVertices & sha)
 {
-    tab[0] = obj[0][0][0][0];
-    tab[1] = obj[0][0][0][1];
-    tab[2] = obj[0][0][0][2];
-    tab[3] = obj[0][0][0][0];
-    tab[4] = obj[0][0][0][1];
-    tab[5] = obj[0][0][0][2];
+    LineVertices lin;
+    double tab[6];
 
-    for(ShapeVertices & sha : obj)
-        for(LineVertices & lin : sha)
-            for(Wektor3D & vec : lin)
+    for(ShapeVertices & shape : obj)
+    {
+        tab[0] = shape[0][0][0];
+        tab[1] = shape[0][0][1];
+        tab[2] = shape[0][0][2];
+        tab[3] = shape[0][0][0];
+        tab[4] = shape[0][0][1];
+        tab[5] = shape[0][0][2];
+
+
+        for(LineVertices & line : shape)
+            for(Wektor3D & vec : line)
             {
                 if(vec[0] < tab[0])
                     tab[0] = vec[0];
@@ -39,4 +44,18 @@ void ObiektGraficzny::scanBounds(Vertices<ShapeVertices> obj, double *tab)
                 if(vec[2] > tab[5])
                     tab[5] = vec[2];
             }
+
+        lin.push_back(Wektor3D(tab[0], tab[1], tab[2]));
+        lin.push_back(Wektor3D(tab[3], tab[1], tab[2]));
+        lin.push_back(Wektor3D(tab[0], tab[4], tab[2]));
+        lin.push_back(Wektor3D(tab[3], tab[4], tab[2]));
+        lin.push_back(Wektor3D(tab[0], tab[1], tab[5]));
+        lin.push_back(Wektor3D(tab[3], tab[1], tab[5]));
+        lin.push_back(Wektor3D(tab[0], tab[4], tab[5]));
+        lin.push_back(Wektor3D(tab[3], tab[4], tab[5]));
+
+        sha.push_back(lin);
+
+        lin.clear();
+    }
 }

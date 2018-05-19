@@ -26,7 +26,7 @@ class Robot : public ObiektGraficzny {
 
     Vertices<ShapeVertices> vertices;
 
-    LineVertices collisionRectangle;
+    ShapeVertices collisionRectangle;
 
     /*!
      * \brief Kąt obrotu robota od kąta zero.
@@ -53,7 +53,9 @@ public:
      */
     Robot();
 
-    Robot(const Wektor3D & l);
+    Robot(const Wektor3D & l, const double height);
+
+    bool collides(const ObiektGraficzny &obj);
 
     /*!
      * \brief Dodaje kształt do lokalnego zbioru wierzchołków robota.

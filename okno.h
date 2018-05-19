@@ -16,6 +16,9 @@
 #include "SWektor.hh"
 #include "Wektor3D.hh"
 #include "Scene.hh"
+#include "create.h"
+
+
 
 class Okno : public QWidget
 {
@@ -49,14 +52,18 @@ private:
 
     QLabel *selectRobotLabel;                               /** Etykieta listy rozwijanej wyboru robota */
 
-    QPushButton *addRobot;                                  /** Przycisk dodawania robota */
-    QPushButton *deleteActiveRobot;                        /** Przycisk usuwania robota */
+    QPushButton *addRobot,                                  /** Przycisk dodawania robota */
+                *deleteActiveRobot,                        /** Przycisk usuwania robota */
+                *addObstacle;
 
 
     Emitter *emiter;                                        /** Emituje cykliczny sygnal w wątku */
     QLabel *SWektorAmount;                                  /** Wyswietla ilosc stworzonych obecnie obiektow SWektor */
 
     Scene sc;       /** Scena */
+
+    createRobot *createRobotDialog;
+    createObstacle *createObstacleDialog;
 
 protected:
     void keyPressEvent(QKeyEvent *e);
@@ -77,6 +84,7 @@ public slots:
     void setActiveRobot();
     void sendAddRobot();
     void sendDeleteRobot();
+    void sendAddObstacle();
 };
 
 #endif // OKNO_H

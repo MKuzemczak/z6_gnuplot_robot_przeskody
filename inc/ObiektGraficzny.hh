@@ -49,7 +49,7 @@ class ObiektGraficzny {
      */
     Vertices<ShapeVertices> _vertices;
 
-    LineVertices _collisionRectangle;
+    ShapeVertices _collisionRectangle;
 
 public:
 
@@ -60,6 +60,14 @@ public:
      */
     Wektor3D & getLoc () { return _location; }
 
+
+    /*!
+     * \brief Getter wektora lokalizacji
+     * \return Wektor lokalizacji obiektu w postaci modyfikowalnej
+     */
+    const Wektor3D & getLoc () const { return _location; }
+
+
     /*!
      * \brief Getter zbioru wierzchołków
      * \return Wektor elementów składowych obiektu w postaci modyfikowalnej.
@@ -67,10 +75,22 @@ public:
     Vertices<ShapeVertices> & get_ver() { return _vertices; }
 
     /*!
+     * \brief Getter zbioru wierzchołków
+     * \return Wektor elementów składowych obiektu w postaci modyfikowalnej.
+     */
+    const Vertices<ShapeVertices> & get_ver() const { return _vertices; }
+
+    /*!
      * \brief Getter zbioru wierzchołków prostopadłościanu od kolizji.
      * \return Wektor typu LineVertices wierchołków prostopadłościanu.
      */
-    LineVertices & getColRect() { return _collisionRectangle; }
+    ShapeVertices & get_colRect() { return _collisionRectangle; }
+
+    /*!
+     * \brief Getter zbioru wierzchołków prostopadłościanu od kolizji.
+     * \return Wektor typu LineVertices wierchołków prostopadłościanu.
+     */
+    const ShapeVertices & get_colRect() const { return _collisionRectangle; }
 
     /*!
      * \brief Dodanie kształtu do zbioru wierzchołków.
@@ -78,7 +98,7 @@ public:
      */
     void _addShape(const ShapeVertices sha) { _vertices.push_back(sha); }
 
-    void scanBounds(Vertices<ShapeVertices> obj, double *tab);
+    void scanBounds(Vertices<ShapeVertices> obj, ShapeVertices & sha);
 
     /*!
      * \brief Dodanie wektora na koniec.
@@ -88,6 +108,7 @@ public:
      */
     void _push_back(const Wektor3D v) { _vertices[_vertices.size() - 1][_vertices[_vertices.size() - 1].size() - 1].push_back(v); }
 
+    //virtual bool collides(const ObiektGraficzny & obj) = 0;
 };
 
 #endif
