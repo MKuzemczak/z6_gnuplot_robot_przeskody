@@ -23,7 +23,8 @@ HEADERS = \
    $$PWD/okno.h \
     obstacle.h \
     gjk_collision_detection.h \
-    create.h
+    create.h \
+    objectfactory.h
 
 SOURCES = \
    $$PWD/src/lacze_do_gnuplota.cpp \
@@ -37,7 +38,8 @@ SOURCES = \
    $$PWD/okno.cpp \
     obstacle.cpp \
     gjk_collision_detection.cpp \
-    create.cpp
+    create.cpp \
+    objectfactory.cpp
 
 INCLUDEPATH = \
     $$PWD/. \

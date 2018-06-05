@@ -108,7 +108,7 @@ public:
      */
     void _push_back(const Wektor3D v) { _vertices[_vertices.size() - 1][_vertices[_vertices.size() - 1].size() - 1].push_back(v); }
 
-    //virtual bool collides(const ObiektGraficzny & obj) = 0;
+    virtual bool collides(const ObiektGraficzny & obj) = 0;
 };
 
 #endif

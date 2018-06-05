@@ -28,7 +28,7 @@ public:
     void goGlobal();
     void make_polygon3D(ShapeVertices & sha, double radius, double height, double vertixAmount);
 
-    bool collides(const ObiektGraficzny & obj);
+    bool collides(const ObiektGraficzny & obj) {}
 };
 
 class SquareObstacle : public Obstacle {

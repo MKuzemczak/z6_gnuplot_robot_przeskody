@@ -55,6 +55,8 @@ public:
      * \brief Czyści łamaną.
      */
     void clear();
+
+    bool collides(const ObiektGraficzny & obj) {}
 };
 
 
